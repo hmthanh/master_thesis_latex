@@ -1,155 +1,152 @@
-\chapter{TỔNG QUAN}
+\chapter{OVERVIEW}
 \label{Chapter2}
 
-Bài toán sinh cử chỉ cũng tương tự như các bài toán khác, đều đã nghiên cứu và phát triển song hành với các phương pháp học máy truyền thống và hiện đại. Gồm các nhóm phương pháp dựa trên luật và các phương pháp dựa trên dữ liệu.  Đầu tiên luận văn trình bày về các đặc điểm của cử chỉ \autoref{sec:relationspeechandgesture}, từ đó là tiền đề cho việc học mối quan hệ giữa cử chỉ, văn bản và giọng nói. Trong mục \autoref{sec:commonstage}, luận văn sẽ trình bày về các công đoạn chung trong các phương pháp sinh cử chỉ.
-Ở phần \autoref{sec:relatedwork}, luận văn trình bày về các phương pháp đã được sử dụng trong quá trình sinh cử chỉ. Luận văn sẽ so sánh các phương pháp, từ đó nêu lý do luận văn sử dụng mô hình diffusion để áp dụng cho bài toán sinh cử chỉ.
-Trong phần \autoref{sec:diffusionbase}, luận văn sẽ trình bày về cách các mô hình diffusion được áp dụng cho bài toán sinh cử chỉ gần đây.
+The gesture generation problem, like other machine learning tasks, has been studied and developed alongside both traditional and modern machine learning methods. These include rule-based and data-driven approaches. This thesis first presents the characteristics of gestures \autoref{sec:relationspeechandgesture}, serving as the foundation for learning the relationship between gestures, text, and speech. In section \autoref{sec:commonstage}, the thesis introduces the common stages across different gesture generation methods.
 
-\section{Đặc điểm của cử chỉ}
+In section \autoref{sec:relatedwork}, the thesis presents the methods that have been applied in gesture generation. A comparison of these methods is provided, leading to the motivation for adopting diffusion models for this task.
+
+Section \autoref{sec:diffusionbase} explains how diffusion models have recently been applied to gesture generation.
+
+\section{Gesture Characteristics}
 \label{sec:relationspeechandgesture}
 
-Theo ngôn ngữ học, cử chỉ có thể được phân thành 6 nhóm chính: cử chỉ thích nghi (adaptors), cử chỉ biểu tượng (emblems), cử chỉ chỉ định (deictics), cử chỉ biểu trưng (iconics), cử chỉ ẩn dụ (metaphorics), và cử chỉ nhấn mạnh (beat) \cite{ekman1969repertoire}, \cite{sebeok2011advances}. Trong số đó, cử chỉ nhấn mạnh không mang ý nghĩa ngữ nghĩa trực tiếp nhưng đóng vai trò quan trọng trong việc đồng bộ nhịp điệu giữa giọng nói và cử chỉ \cite{kipp2005gesture}, \cite{sebeok2011advances}. Tuy nhiên, nhịp điệu giữa giọng nói và cử chỉ nhấn mạnh không hoàn toàn đồng bộ, khiến việc học mối quan hệ thời gian giữa chúng trở nên phức tạp \cite{mcclave1994gestural}, \cite{bhattacharya2021speech2affectivegestures}, \cite{kucherenko2020gesticulator}, \cite{yoon2020speech}.
+According to linguistics, gestures can be categorized into six main groups: adaptors, emblems, deictics, iconics, metaphorics, and beats \cite{ekman1969repertoire}, \cite{sebeok2011advances}. Among them, beat gestures do not carry direct semantic meaning but play an important role in synchronizing rhythm between speech and gesture \cite{kipp2005gesture}, \cite{sebeok2011advances}. However, the rhythm between speech and beat gestures is not fully synchronized, making the temporal alignment between them complex to model \cite{mcclave1994gestural}, \cite{bhattacharya2021speech2affectivegestures}, \cite{kucherenko2020gesticulator}, \cite{yoon2020speech}.
 
-Cử chỉ tương tác với các cấp độ thông tin khác nhau trong giọng nói \cite{sebeok2011advances}. Chẳng hạn, cử chỉ biểu tượng, như hành động giơ ngón cái, thường liên quan đến thông tin ngữ nghĩa cấp cao (ví dụ: "tốt" hoặc "tuyệt vời"), trong khi cử chỉ nhấn mạnh thường đi kèm với thông tin cấp thấp như nhấn mạnh trong âm thanh. Các nghiên cứu trước đây thường chỉ sử dụng đặc trưng từ lớp cuối cùng của bộ mã hóa giọng nói để tổng hợp cử chỉ \cite{alexanderson2020style}, \cite{bhattacharya2021speech2affectivegestures}, \cite{kucherenko2021large}, \cite{qian2021speech}, \cite{yoon2022genea}. Tuy nhiên, cách tiếp cận này có thể làm trộn lẫn thông tin từ nhiều cấp độ, dẫn đến khó khăn trong việc phân tách rõ ràng nhịp điệu và ngữ nghĩa.
+Gestures interact with various levels of information in speech \cite{sebeok2011advances}. For instance, emblematic gestures like a thumbs-up are usually linked to high-level semantic content (e.g., “good” or “excellent”), while beat gestures often accompany low-level prosodic features such as emphasis. Previous studies typically extract features from the final layer of the speech encoder to synthesize gestures \cite{alexanderson2020style}, \cite{bhattacharya2021speech2affectivegestures}, \cite{kucherenko2021large}, \cite{qian2021speech}, \cite{yoon2022genea}. However, this approach may blend information from different levels, making it hard to disentangle rhythm and semantics.
 
-Như các nghiên cứu ngôn ngữ học chỉ ra \cite{kipp2005gesture}, \cite{neff2008gesture}, \cite{webb1997linguistic}, cử chỉ trong giao tiếp hàng ngày có thể được chia thành một số lượng giới hạn các đơn vị ngữ nghĩa với các biến thể chuyển động khác nhau. Dựa trên giả định này, được phân tách đặc trưng giọng nói thành hai loại: đặc trưng cấp cao đại diện cho các đơn vị ngữ nghĩa, và đặc trưng cấp thấp xác định các biến thể chuyển động. Từ đó, mối liên hệ giữa chúng được học thông qua các lớp khác nhau của bộ mã hóa giọng nói. Các thử nghiệm chứng minh rằng cơ chế này có khả năng tách biệt rõ ràng các đặc trưng ở nhiều cấp độ, đồng thời tổng hợp được cử chỉ phù hợp về ngữ nghĩa và phong cách.
+As shown in linguistic studies \cite{kipp2005gesture}, \cite{neff2008gesture}, \cite{webb1997linguistic}, gestures in daily communication can be decomposed into a limited number of semantic units with various motion variations. Based on this assumption, speech features are divided into two types: high-level features representing semantic units and low-level features capturing motion variations. Their relationships are learned across different layers of the speech encoder. Experiments demonstrate that this mechanism can effectively disentangle features at different levels and generate gestures that are both semantically and stylistically appropriate.
 
-
-
-\section{Tổng quan các phương pháp cho bài toán sinh cử chỉ}
+\section{Overview of Gesture Generation Methods}
 \label{sec:relatedwork}
 
-\subsection{Phương pháp dựa trên luật}
+\subsection{Rule-Based Methods}
 
-\subsubsection{Nguyên lý chung}
+\subsubsection{General Principle}
 
-Dựa trên việc xây dựng các quy tắc hoặc luật rõ ràng, các quy tắc được định nghĩa thủ công, xác định cách hệ thống xử lý đầu vào để tạo ra đầu ra.
+These methods rely on clearly defined rules, which are manually crafted to determine how the system processes inputs to produce outputs.
 
-\subsubsection{Phương pháp}
+\subsubsection{Methods}
 
-Tiêu biểu cho phương pháp dựa trên luật là \textit{Robot behavior toolkit} \cite{huang2012robot} và  \textit{Animated conversation} \cite{cassell1994animated}.
-Phương pháp dựa trên luật thường ánh xạ (mappings) từng giọng nói với từng đơn vị cử chỉ, với các luật được tạo thủ công. Phương pháp dựa trên luật thì dễ dàng điều khiển kết quả của mô hình và có khả năng giải thích tốt kết quả dự đoán của mô hình.
-Tuy nhiên chi phí để tạo thủ công là không khả thi để xây dựng cho các ứng dụng phức tạp đòi hỏi phải xử lý một lượng dữ liệu rất lớn.
+Representative rule-based methods include the \textit{Robot behavior toolkit} \cite{huang2012robot} and \textit{Animated conversation} \cite{cassell1994animated}. These approaches typically map speech to gesture units using handcrafted rules. Rule-based systems allow for straightforward control over model outputs and provide good interpretability.  
+However, the cost of manually designing these rules is prohibitive for complex applications requiring the processing of large-scale data.
 
-\subsection{Phương pháp dựa trên thống kê}
+\subsection{Statistical Methods}
 
-\subsubsection{Nguyên lý chung}
+\subsubsection{General Principle}
 
-Dựa vào phân tích dữ liệu, học từ các mẫu trong tập dữ liệu và sử dụng các mô hình xác suất hoặc hàm toán học để đưa ra dự đoán. Phương pháp này dựa trên việc tối ưu hóa các tham số của mô hình để phù hợp với dữ liệu.
+These methods rely on data analysis, learning patterns from datasets, and using probabilistic models or mathematical functions for prediction. The approach involves optimizing model parameters to fit the data.
 
-\subsubsection{Phương pháp}
+\subsubsection{Methods}
 
-Tương tự như phương pháp dựa trên luật, phương pháp dựa trên dữ liệu cũng ánh xạ các đặc trưng của giọng nói tương ứng với cử chỉ nhưng thay vì làm thủ công thì được sử dụng học một cách tự động dựa trên các phân tích thống kê của dữ liệu.
+Like rule-based methods, data-driven methods also map speech features to corresponding gestures. However, instead of manual rules, they employ automatic learning based on statistical data analysis.
 
-Tiêu biểu của phương pháp thống kê là \textit{Gesture controllers} \cite{levine2010gesture}, \textit{Statistics-based} \cite{yang2020statistics}, các phương pháp này sử dụng phân phối xác suất để tìm sự tương đồng giữa các đặc trưng giọng nói và cử chỉ. \textit{Gesture modeling}  \cite{neff2008gesture} xây dựng mô hình xác suất để học từng phong cách của từng người nói.
+Representative statistical approaches include \textit{Gesture controllers} \cite{levine2010gesture}, \textit{Statistics-based} \cite{yang2020statistics}, which use probabilistic distributions to find similarities between speech and gesture features. \textit{Gesture modeling} \cite{neff2008gesture} constructs probabilistic models to learn individual speaker styles.
 
-\subsection{Phương pháp học sâu}
+\subsection{Deep Learning Methods}
 
-\textbf{Nguyên lý chung của phương pháp học sâu}
+\textbf{General Principle of Deep Learning Methods}
 
-Sử dụng mạng nơ-ron đa lớp (Multi-layer Perceptron) để tự động trích xuất đặc trưng từ dữ liệu thô và học các biểu diễn phức tạp của dữ liệu. Mô hình học thông qua tối ưu hóa các tham số.
+These methods utilize multi-layer perceptrons (MLPs) to automatically extract features from raw data and learn complex data representations through parameter optimization.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{GeneralOverview}
-	\caption{Tổng quan về các mô hình tạo sinh khác nhau.}
+	\caption{Overview of different generative models.}
 	\label{fig:GeneralOverview}
 \end{figure}
 
-Phương pháp sinh cử chỉ bằng học sâu minh họa ở \autoref{fig:GeneralOverview} được chia thành hai nhóm chính: học dựa trên ước lượng log likelihood (likelihood-based model)  và phương pháp dựa vào các mô hình sinh ngầm định (implicit generative models) \cite{song2021score}.
+As illustrated in \autoref{fig:GeneralOverview}, deep learning-based gesture generation methods can be divided into two main groups: likelihood-based models and implicit generative models \cite{song2021score}.
 
-\subsubsection{Mô hình dựa trên likelihood}
+\subsubsection{Likelihood-Based Models}
 
-\textbf{Nguyên lý chung của mô hình dựa trên likelihood}
+\textbf{General Principle of Likelihood-Based Models}
 
-Mô hình dựa trên Log Likelihood hoạt động bằng cách tối đa hóa xác suất hợp lý của dữ liệu quan sát được, dựa trên các tham số $\theta$ của mô hình. Mục tiêu là tìm được tham số tối ưu $\theta'$ dựa trên xác suất $p(\mathbf{x})$ của dữ liệu, trong đó $\mathbf{x}$ là dữ liệu chuỗi cử chỉ.
+These models work by maximizing the likelihood of observed data given model parameters $\theta$. The objective is to find the optimal parameters $\theta'$ by modeling the probability $p(\mathbf{x})$ of the data, where $\mathbf{x}$ represents the gesture sequence.
 
-\textbf{Phương pháp}
+\textbf{Methods}
 
-Quá trình áp dụng các phương pháp học sâu vào bài toán sinh cử chỉ cũng tương đồng với sự phát triển của các phương pháp học sâu, từ RNN, LSTM và Transformer .v.v.. Các phương pháp tiêu biểu trong nhóm phương pháp dựa trên likelihood:
+The application of deep learning to gesture generation has evolved alongside the development of deep learning models, including RNNs, LSTMs, and Transformers. Representative likelihood-based methods include:
 
 \begin{itemize}[]
-	\item Phương pháp \textit{Gesticulator} \cite{kucherenko2020gesticulator} sử dụng kiến trúc Multilayer Perceptron (MLP) để mã hóa đặc trưng văn bản và âm thanh, sử dụng vector văn bản từ BERT làm vector đặc trưng cho văn bản. 
-	
-	\item Trong \textit{HA2G} \cite{liu2022learning} dựa trên kiến trúc Transformer xây dựng một mô hình phân cấp (hierarchical) để học các tương quan ở nhiều cấp độ giữa lời nói và cử chỉ, từ các đặc trưng cục bộ (local) đến toàn cục (global). 
-	
-	\item \textit{Gesture Generation from Trimodal Context} \cite{yoon2020speech} dựa trên kiến trúc RNN, coi việc sinh cử chỉ là bài toán dịch trong xử lý ngôn ngữ. 
-	
-	\item \textit{DNN} \cite{chiu2015predicting} sử dụng LSTM kết hợp GRU để xây dựng mô hình phân loại (classifier neural network) từng đơn vị cử chỉ để chọn một đơn vị cử chỉ phù hợp dựa trên đầu vào là giọng nói. 
-	
-	\item \textit{Cascaded Motion Network (CaMN)} \cite{liu2022beat} đề xuất tập dữ liệu BEAT đồng thời đề xuất mô hình giống như thác nước, các thông tin về người nói, nhãn cảm xúc, văn bản, giọng nói và cử chỉ được đi qua các lớp để trích xuất đặc trưng để được các vector tiềm ẩn. Trong giai đoạn kết hợp các đặc trưng, mô hình CaMN kết hợp các đặc trưng theo hình thác nước, lần lượt kết hợp các đặc trưng người nói và cảm xúc, và tiếp tục kết hợp với các vector tiềm ẩn của văn bản, giọng nói và cử chỉ.
-	
-	\item \textbf{Motion Graph} : Trong phương pháp \textit{Gesturemaster} \cite{zhou2022gesturemaster}, mô hình xây dựng đồ thị ngữ nghĩa, từ trong câu được kết nối trong một đồ thị, nơi các liên kết biểu thị quan hệ ngữ nghĩa giữa chúng. Dựa trên thông tin đồ thị, mô hình chọn các đỉnh (node) và cạnh (edges) có sự tương đồng nhất để biểu diễn cử chỉ. 
-	
+	\item \textit{Gesticulator} \cite{kucherenko2020gesticulator}, which uses a Multilayer Perceptron (MLP) to encode text and audio features, with BERT-derived vectors used as text features.
+
+	\item \textit{HA2G} \cite{liu2022learning} builds a hierarchical Transformer-based model to learn multi-level correlations between speech and gestures, from local to global features.
+
+	\item \textit{Gesture Generation from Trimodal Context} \cite{yoon2020speech} uses an RNN architecture and treats gesture generation as a translation task in natural language processing.
+
+	\item \textit{DNN} \cite{chiu2015predicting} combines LSTM and GRU to build a classifier neural network that selects appropriate gesture units based on speech input.
+
+	\item \textit{Cascaded Motion Network (CaMN)} \cite{liu2022beat} introduces the BEAT dataset and a waterfall-like model. Speaker information, emotion labels, text, speech, and gesture features are processed through layers to extract latent vectors. In the fusion stage, CaMN combines features sequentially: speaker and emotion features are merged first, followed by integration with latent vectors of text, speech, and gestures.
+
+	\item \textbf{Motion Graph}: In \textit{Gesturemaster} \cite{zhou2022gesturemaster}, a semantic graph is constructed where words in a sentence are connected based on semantic relationships. The model then selects the most relevant nodes and edges in the graph to represent gestures.
 \end{itemize}
 
-\subsubsection{Mô hình sinh ngầm định}
+
+\subsubsection{Implicit Generative Models}
 \label{sec:ImplicitGenerativeModels}
 
-\textbf{Nguyên lý}
+\textbf{Principle}
 
-Mô hình sinh ngầm định học phân phối dữ liệu mà không cần biểu diễn tường minh hàm mật độ xác suất $p(\bx)$. Thay vì trực tiếp tính xác suất $p(\bx)$, mô hình sẽ học một ánh xạ $G_{\theta}: \mathcal{Z} \to \mathcal{X}$ thông qua so khớp phân phối giữa dữ liệu thật và dữ liệu sinh ra $\mathbf{x} = G_\theta(\mathbf{z}), \quad \mathbf{z} \sim p_z(\mathbf{z})$.  Trong đó $\mathcal{Z}$ là không gian nhiễu đầu vào, thường có phân phối đơn giản \(p_{z}\) (ví dụ: Gaussian, Uniform). \(\mathcal{X}\) là không gian dữ liệu thực, là chuỗi cử chỉ \(\mathbf{x}\). 
+Implicit generative models learn the data distribution without explicitly modeling the probability density function $p(\bx)$. Instead of directly computing $p(\bx)$, the model learns a mapping $G_{\theta}: \mathcal{Z} \to \mathcal{X}$ by matching the distributions between real and generated data $\mathbf{x} = G_\theta(\mathbf{z}), \quad \mathbf{z} \sim p_z(\mathbf{z})$. Here, $\mathcal{Z}$ denotes the input noise space, typically with a simple distribution \(p_{z}\) (e.g., Gaussian, Uniform), and \(\mathcal{X}\) is the space of real data, which in this case is gesture sequences \(\mathbf{x}\).
 
-Trong bài toán sinh cử chỉ, để kết hợp thêm các điều kiện về giọng nói, nhãn văn bản, các mô hình sinh ngầm định thường kết hợp thêm điều kiện $\mathbf{c}$, với điều kiện là ngữ cảnh của bài toán để có được kết quả sinh: $\mathbf{x} = G_\theta(\mathbf{z}, \mathbf{c})$. Ngữ cảnh của bài toán có thể bao gồm giọng nói, văn bản, mã định danh người nói, phong cách, cảm xúc hay cử chỉ khởi tạo.
+In gesture generation, to incorporate conditions such as speech or text labels, implicit generative models often introduce a condition $\mathbf{c}$ representing the context of the task, resulting in the conditional generation: $\mathbf{x} = G_\theta(\mathbf{z}, \mathbf{c})$. This context may include speech, text, speaker ID, style, emotion, or initial gestures.
 
-%
-Ví dụ tiêu biểu nhất là mô hình generative adversarial networks (GANs) và Diffusion. Khi dữ liệu được tổng hợp bằng cách chuyển phân phối dữ liệu ban đầu ở dạng phân phối chuẩn về phân phối của dữ liệu.
+A typical example is the generative adversarial network (GAN) and Diffusion model, where data is synthesized by transforming an initial simple distribution (e.g., Gaussian) into the target data distribution.
 
-\textbf{Phương pháp} 
+\textbf{Methods} 
 
-Các phương pháp tiêu biểu cho mô hình sinh ngầm định là 
+Representative implicit generative models include:
 
 \begin{itemize}
-	\item \textit{MoGlow} \cite{henter2020moglow} sử dụng Normalizing Flows được sử dụng để duy trì tính nhất quán và tính tương thích của chuyển động, đồng thời cung cấp khả năng điều khiển thông qua các thông số đầu vào. Điều này cho phép người dùng tạo ra các chuyển động mới hoặc thay đổi các chuyển động hiện có bằng cách thay đổi các thông số điều khiển.
-	
-	\item \textbf{GAN}: \textit{GRU-based WGAN} \cite{wu2021probabilistic} sử dụng Wasserstein GAN để đánh giá và cải thiện chất lượng của việc tổng hợp cử chỉ, mô hình tập trung vào việc tối ưu hóa hàm mất mát Wassserstein, giúp giảm tình trạng chảy đặc (mode collapse) thường gặp trong GAN truyền thống. GRU được sử dụng để xử lý dữ liệu lời nói và biến nó thành các đặc trưng cử chỉ có thể sử dụng được. Sau đó, những đặc trưng này được cung cấp vào mạng WGAN, nơi chúng sẽ được đánh giá và tinh chỉnh để tổng hợp cử chỉ.
-	
-	\item \textbf{VAE}:  \textit{FreeMo} \cite{xu2022freeform} sử dụng VAE để phân rã (decomposing) các cử chỉ thành tư thế cử chỉ (pose modes) và giai điệu chuyển động (rhythmic motions). Tư thế cử chỉ được sinh ra ngẫu nhiên sử dụng quá trình lấy mẫu có điều kiện trong không gian ẩn của VAE. Trong khi các giai điệu chuyển động được sinh ra từ 
-	
-	\item \textbf{VQ-VAE} \textit{Rhythmic Gesticulator} \cite{ao2022rhythmic} tiền xử lý các đoạn giọng nói theo nhịp điệu (beats) để tách giọng nói thành các đoạn nhỏ, và biểu diễn chúng thành các khối theo kích thước chuẩn hóa (normalization). Tương tự phương pháp VQ-VAE, các chuỗi cử chỉ đã chuẩn hóa sẽ được lượng tử hóa (quantization) thành các vùng không gian khác nhau của cử chỉ được gọi là các từ vựng cử chỉ (gesture lexicon). Mô hình học từ vựng cử chỉ (gesture lexicon) từ khối chuẩn hóa trên với điều kiện là cử chỉ trước đó, phong cách cử chỉ và giọng nói. Sau đó mô hình tái tạo lại từ quá trình chuẩn hóa (denormalization) để có được chuỗi cử chỉ ban đầu. Khác với mô hình sinh ngầm định như GANs hay Diffusion, VQ-VAE thường tập trung vào việc nén dữ liệu hơn là sinh dữ liệu trực tiếp.
-	
-	\item \textbf{Diffusion}:  Mô hình Diffusion tập trung vào việc tạo ra dữ liệu mới từ trạng thái nhiễu, phục hồi ngược lại dữ liệu gốc. Các phương pháp dựa trên Diffusion sẽ được trình bày ở mục \autoref{sec:diffusionbase}
-	
+	\item \textit{MoGlow} \cite{henter2020moglow} uses Normalizing Flows to maintain motion consistency and compatibility, while providing control via input parameters. This allows users to generate new motions or modify existing ones by adjusting control parameters.
+
+	\item \textbf{GAN}: \textit{GRU-based WGAN} \cite{wu2021probabilistic} utilizes Wasserstein GAN to evaluate and improve the quality of gesture synthesis. The model focuses on optimizing the Wasserstein loss, mitigating mode collapse typically seen in traditional GANs. GRUs process speech data and convert it into usable gesture features, which are then fed into the WGAN for evaluation and refinement.
+
+	\item \textbf{VAE}: \textit{FreeMo} \cite{xu2022freeform} employs a VAE to decompose gestures into pose modes and rhythmic motions. Gesture poses are randomly sampled using conditional sampling in the VAE's latent space, while rhythmic motions are generated from...
+
+	\item \textbf{VQ-VAE}: \textit{Rhythmic Gesticulator} \cite{ao2022rhythmic} preprocesses speech segments based on beats, dividing speech into smaller parts and representing them as blocks with normalized dimensions. Similar to the VQ-VAE approach, normalized gesture sequences are quantized into discrete gesture lexicons. The model learns the gesture vocabulary conditioned on the previous gesture, gesture style, and speech. It then reconstructs the gesture sequence via denormalization. Unlike generative models like GANs or Diffusion, VQ-VAE focuses more on compression rather than direct generation.
+
+	\item \textbf{Diffusion}: Diffusion models focus on generating new data from noisy inputs by progressively denoising toward the original data. Diffusion-based approaches will be presented in section \autoref{sec:diffusionbase}.
 \end{itemize}
 
-
-\subsection{So sánh các phương pháp sinh cử chỉ}
+\subsection{Comparison of Gesture Generation Methods}
 
 \begin{table}[H]
 	\small
 	\centering
-	\renewcommand{\arraystretch}{1.5} % Tăng khoảng cách giữa các hàng
-	\resizebox{\textwidth}{!}{ % Giảm kích thước bảng để vừa với trang
+	\renewcommand{\arraystretch}{1.5}
+	\resizebox{\textwidth}{!}{
 		\begin{tabular}{|p{0.2\textwidth}|p{0.35\textwidth}|p{0.35\textwidth}|p{0.2\textwidth}|}
 			\hline
-			\textbf{Phương pháp tiêu biểu} & \textbf{Ưu điểm} & \textbf{Nhược điểm} & \textbf{Loại phương pháp} \\ \hline
+			\textbf{Representative Method} & \textbf{Advantages} & \textbf{Disadvantages} & \textbf{Method Type} \\ \hline
 			Robot behavior toolkit \cite{huang2012robot} & 
-			- Dễ hiểu và dễ triển khai. \newline 
-			- Dễ giải thích và có thể kiểm soát được \newline
-			- Hiệu quả trong các trường hợp đơn giản hoặc dữ liệu nhỏ. & 
-			- Không tổng quát hóa tốt với dữ liệu phức tạp. \newline 
-			- Đòi hỏi nhiều công sức trong việc xây dựng quy tắc thủ công. & 
-			Mô hình dựa trên luật  \\ \hline
+			- Easy to understand and implement. \newline 
+			- Highly interpretable and controllable. \newline
+			- Effective for simple cases or small datasets. & 
+			- Does not generalize well to complex data. \newline 
+			- Labor-intensive rule construction. & 
+			Rule-based model \\ \hline
 			MLP \cite{kucherenko2020gesticulator}, RNN \cite{bhattacharya2021speech2affectivegestures}, \cite{liu2022learning}, \cite{hasegawa2018evaluation}, \cite{yoon2020speech}, CNN \cite{habibie2021learning}, Transformer \cite{bhattacharya2021text2gestures}  & 
-			- Khả năng ước lượng mật độ xác suất của dữ liệu \newline 
-			- Có khả năng mở rộng và học từ dữ liệu lớn & 
-			- Dễ bị ảnh hưởng bởi nhiễu \newline 
-			- Kết quả thấp ở vùng dữ liệu hiếm \newline
-			- Khả năng sinh không đa dạng & 
-			Mô hình dựa trên Likelihood \\ \hline
+			- Able to estimate data probability density. \newline 
+			- Scalable and learns well from large datasets. & 
+			- Sensitive to noise. \newline 
+			- Performs poorly on low-frequency data. \newline
+			- Low diversity in generation. & 
+			Likelihood-based model \\ \hline
 			\textbf{DiffusionStyle-Gesture} \cite{yang2023diffusestylegesture}, MDM \cite{tevet2022human}, Motiondiffuse \cite{zhang2022motiondiffuse} &
-			- Tạo ra dữ liệu chất lượng cao. \newline 
-			- Linh hoạt và đa dạng \newline
-			- Phủ được vùng có mật độ dữ liệu thấp & 
-			- Cần cấu hình phức tạp để đạt hiệu năng tốt. \newline 
-			- Mỗi lần lấy nhiễu ngẫu nhiên là khác nhau. \newline 
-			- Quá trình lấy mẫu chậm & 
-			Mô hình sinh ngầm định\\ \hline
+			- Generates high-quality data. \newline 
+			- Flexible and diverse outputs. \newline
+			- Covers low-density regions of data space. & 
+			- Requires complex configuration for optimal performance. \newline 
+			- Random noise leads to different outputs each time. \newline 
+			- Slow sampling process. & 
+			Implicit generative model \\ \hline
 		\end{tabular}
 	}
-	\caption{Bảng so sánh ưu và nhược điểm của các phương pháp}
+	\caption{Comparison of advantages and disadvantages of different methods}
 	\label{table:CompareMethod}
 \end{table}
+
 
 %\textbf{Bảng so sánh các phương pháp}
 %

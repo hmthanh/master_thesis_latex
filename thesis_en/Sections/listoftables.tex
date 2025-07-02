@@ -1,17 +1,14 @@
-
-% Thêm "Danh mục các bảng số liệu" vào mục lục mà không liên quan đến \listoftables
+% Manually add "List of Tables" to the table of contents without relying on \listoftables
 \phantomsection
-\addcontentsline{toc}{section}{Danh mục các bảng số liệu}
+\addcontentsline{toc}{section}{List of Tables}
 
-
-% Tạm thời ngừng việc thêm vào mục lục
+% Temporarily disable adding entries to the table of contents
 \addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
 
-% Sử dụng \listoftables mà không hiển thị trong mục lục
-\renewcommand{\listtablename}{\makebox[\linewidth]{\Large DANH MỤC CÁC BẢNG SỐ LIỆU}}
+% Use \listoftables without automatically adding it to the table of contents
+\renewcommand{\listtablename}{\makebox[\linewidth]{\Large LIST OF TABLES}}
 
 \listoftables
 
-% Khôi phục lại việc thêm vào mục lục cho các phần sau
+% Restore table of contents depth for subsequent sections
 \addtocontents{toc}{\protect\setcounter{tocdepth}{2}}
-
