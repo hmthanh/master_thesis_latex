@@ -1,87 +1,81 @@
-\chapter{KẾT LUẬN}
+\chapter{CONCLUSION}
 \label{Chapter5}
 
-\section{Kết quả đạt được}
+\section{Achieved Results}
 
-Luận văn đã phát triển và thử nghiệm thành công mô hình sinh cử chỉ OHGesture, một hệ thống có khả năng tạo ra cử chỉ rất tự nhiên, mang lại cảm giác giống người. Điểm nổi bật của mô hình là khả năng đồng bộ chính xác giữa cử chỉ và cảm xúc, nội dung của giọng nói đầu vào, đồng thời có khả năng suy luận vượt ra khỏi các dữ liệu được huấn luyện ban đầu. Điều này có nghĩa là mô hình dựa trên Diffusion không chỉ phụ thuộc vào các mẫu dữ liệu cử chỉ đã được học mà còn có thể có tính khái quát hóa cao, và có thể sinh cử chỉ cho các giọng nói và ngữ cảnh có xác suất dữ liệu thấp.
+This thesis has successfully developed and evaluated the gesture generation model OHGesture, a system capable of producing highly natural gestures that convey a human-like impression. A notable highlight of the model is its precise synchronization between gestures and the emotional content of the input speech, with the ability to generalize beyond the training data. This means the diffusion-based model is not solely dependent on the learned gesture data but also demonstrates strong generalization capabilities, enabling it to generate gestures for low-probability speech and contextual inputs.
 
-Một điểm đáng chú ý khác trong nghiên cứu này là việc mở rộng dữ liệu đầu vào. Luận văn không chỉ giới hạn ở cử chỉ, giọng nói và nhãn cảm xúc mà còn tích hợp thêm các công cụ chuyển đổi văn bản thành giọng nói để chuyển giọng nói thành văn bản. Nhờ có thêm một đặc trưng về văn bản, mô hình có thể bổ sung thêm đặc trưng về ngữ nghĩa của cử chỉ và giúp mô hình có thêm nguồn thông tin để đạt kết quả sinh tốt hơn, đồng thời giúp hệ thống hiểu rõ hơn ngữ cảnh và tạo ra cử chỉ phù hợp với từng nội dung cụ thể.
+Another significant aspect of this research is the expansion of input modalities. The thesis does not limit itself to gestures, speech, and emotion labels but also integrates text-to-speech tools to convert speech into text. By incorporating textual features, the model can better capture the semantic aspects of gestures, providing additional context and enabling the system to produce more appropriate and context-aware gestures.
 
-\section{Ưu và nhược điểm của mô hình}
+\section{Strengths and Limitations of the Model}
 
-Mô hình sinh cử chỉ OHGesture có nhiều ưu điểm đáng kể, góp phần quan trọng trong việc phát triển các hệ thống tương tác người-máy tự nhiên và linh hoạt hơn. Tuy nhiên, vẫn còn một số nhược điểm để cải thiện hiệu quả trong tương lai.
+The OHGesture model offers several significant advantages, contributing meaningfully to the development of more natural and flexible human-machine interaction systems. However, there remain some limitations that require future improvements for enhanced effectiveness.
 
 \vspace{10pt}
 
-\textbf{Ưu điểm:}
+\textbf{Strengths:}
 
 \begin{itemize}
-	\item Độ chân thực cao: Dựa vào kết quả sinh cử chỉ, có thể thấy mô hình OHGesture đã đạt được kết quả sinh cử chỉ có độ giống người cao. Các cử chỉ sinh ra phản ánh được sắc thái và nhịp điệu của giọng nói, giúp hệ thống có khả năng phản hồi đồng bộ với thông tin cảm xúc và nội dung của giọng nói.
+	\item \textbf{High realism:} Based on the gesture generation results, the OHGesture model produces gestures with a high degree of human-likeness. The generated gestures reflect the nuances and rhythm of speech, enabling the system to synchronize effectively with the emotional and semantic content of the speech.
 	
-	\item Khả năng tổng quát tốt: Nhờ mô hình khử nhiễu có thể phủ được các điểm dữ liệu có các xác suất thấp, mô hình có thể suy luận cử chỉ cho các tình huống và trạng thái cảm xúc chưa từng xuất hiện trong tập huấn luyện, cho thấy tiềm năng ứng dụng trong nhiều bối cảnh thực tế.
+	\item \textbf{Good generalization ability:} Thanks to the denoising model's capability to cover low-probability data points, the model can infer gestures for situations and emotional states not present in the training dataset, demonstrating potential for deployment in diverse real-world contexts.
 	
-	\item Có khả năng kiểm soát được nhiều đặc trưng khác nhau: Mô hình diffusion có khả năng điều khiển được các cảm xúc khác nhau, có khả năng nội suy trạng thái giữa các cảm xúc khác nhau.
-	\end{itemize}
-
-\textbf{Nhược điểm:}
-
-\begin{itemize}
-	\item Mô hình hiện chưa có khả năng suy luận theo thời gian thực (real time) và cần nhiều bước để ra kết quả cuối cùng.
-	
-	\item Thông tin đặc trưng theo $D=1141$ được xử lý như một tấm ảnh, không thể hiện đúng đặc trưng chuyển động.
-	
-	\item Phụ thuộc vào dữ liệu đầu vào chất lượng cao: Mô hình yêu cầu dữ liệu giọng nói đầu vào có chất lượng tốt và rõ ràng để đảm bảo độ chính xác của cử chỉ sinh ra. Khi giọng nói đầu vào bị nhiễu hoặc chứa nhiều biến thể cảm xúc khó phân biệt, độ chính xác của cử chỉ sinh ra có thể giảm sút.
-	
-	
+	\item \textbf{Controllability over multiple attributes:} The diffusion model allows control over various emotional states and supports interpolation between different emotions.
 \end{itemize}
 
-
-\section{Phương hướng phát triển và nghiên cứu trong tương lai}
-
-
-Trong tương lai, có nhiều hướng phát triển tiềm năng để cải thiện và mở rộng mô hình sinh cử chỉ OHGesture, nhằm đáp ứng tốt hơn các yêu cầu thực tế và nâng cao tính ứng dụng của hệ thống. Một số hướng nghiên cứu và phát triển chính bao gồm:
+\textbf{Limitations:}
 
 \begin{itemize}
-	\item Tối ưu hóa mô hình để có thể suy luận theo thời gian thực, hiện tại mô hình phải chia chuỗi giọng nói, và kết quả sinh phải được  import vào Unity mới có thể render. Trong tương lai, luận văn mong muốn có thể xây dựng các hệ thống với thời gian thực. để có thể tương tác và tăng tính ứng dụng của mô hình
+	\item The model currently lacks real-time inference capabilities and requires multiple steps to generate the final output.
 	
-	\item Tối ưu hóa quá trình sampling và giảm số bước lấy mẫu: Hiện tại, quá trình sinh cử chỉ đòi hỏi một số bước lấy mẫu (sampling steps) tương đối lớn, ảnh hưởng đến tốc độ và hiệu quả của hệ thống. Việc tối ưu hóa để giảm số bước sampling mà không làm suy giảm chất lượng cử chỉ sinh ra sẽ giúp mô hình đáp ứng nhanh hơn và phù hợp cho các ứng dụng thời gian thực.
+	\item The feature representation with $D=1141$ is processed as an image, which does not fully capture motion characteristics.
 	
-	\item Tích hợp và thử nghiệm các kỹ thuật embedding mới: Sử dụng các phương pháp embedding mới, đa dạng hóa thông tin đầu vào có thể giúp mô hình hiểu và phản ánh tốt hơn ngữ cảnh và cảm xúc của giọng nói. Đây cũng là một hướng phát triển để nâng cao khả năng của hệ thống trong việc sinh cử chỉ phù hợp với ngữ nghĩa của các ngôn ngữ khác nhau.
-	
-	\item Mở rộng sang các ngôn ngữ mới: Hiện tại, mô hình chủ yếu hoạt động với các dữ liệu giọng nói tiếng Anh. Nghiên cứu mở rộng mô hình để sinh cử chỉ cho các ngôn ngữ và nền văn hóa khác nhau sẽ là một bước tiến quan trọng, giúp hệ thống trở nên đa dạng và ứng dụng rộng rãi hơn.
-	
-	\item Kết hợp với mô hình DeepPhase \cite{starke2022deepphase} để đạt hiệu quả sinh cử chỉ thời gian thực: Mục tiêu của luận văn là tích hợp OHGesture với mô hình DeepPhase để phát triển hệ thống có khả năng phản hồi cử chỉ trong thời gian thực, ứng dụng trong các tình huống giao tiếp tự nhiên như hội thoại người-máy và các hệ thống điều khiển bằng giọng nói. Với mục tiêu là học các đặc trưng về pha của các chuyển động để có thể trích xuất được các đặc trưng chuyển động, thay vì sử dụng đặc trưng như một tấm ảnh của mô hình.
-	
-	\item Cải thiện đánh giá khách quan bằng các độ đo tự động: Để giảm sự phụ thuộc vào các đánh giá chủ quan, cần phát triển và tích hợp các phương pháp đánh giá tự động đáng tin cậy, cho phép mô hình có thể tự đánh giá và điều chỉnh theo các chỉ số khách quan.
+	\item Dependence on high-quality input data: The model requires clear and high-quality speech input to ensure accurate gesture generation. When the input speech is noisy or contains ambiguous emotional variations, the accuracy of the generated gestures may degrade.
 \end{itemize}
 
-\section{Đóng góp của luận văn}
+\section{Future Research and Development Directions}
+
+Looking ahead, there are several promising directions to improve and expand the OHGesture gesture generation model to better meet practical requirements and enhance the system’s applicability. Key directions include:
+
+\begin{itemize}
+	\item \textbf{Optimizing the model for real-time inference:} Currently, the model requires speech sequences to be segmented, and the generated results must be imported into Unity for rendering. The thesis aims to develop real-time systems in the future to enable interactive applications and enhance the model's practicality.
+	
+	\item \textbf{Optimizing the sampling process and reducing sampling steps:} At present, the gesture generation process requires a relatively high number of sampling steps, which impacts the system’s speed and efficiency. Optimizing the process to reduce sampling steps without degrading gesture quality would enable faster responses suitable for real-time applications.
+	
+	\item \textbf{Integrating and experimenting with new embedding techniques:} Using novel embedding methods to diversify the input information may help the model better understand and reflect the context and emotions of speech. This development path would also enhance the system’s ability to generate semantically appropriate gestures across different languages.
+	
+	\item \textbf{Expanding to new languages:} Currently, the model primarily operates with English speech data. Extending the model to support gesture generation for various languages and cultures would be a significant advancement, making the system more diverse and widely applicable.
+	
+	\item \textbf{Combining with the DeepPhase model \cite{starke2022deepphase} to enable real-time gesture generation:} The thesis aims to integrate OHGesture with the DeepPhase model to develop systems capable of real-time gesture responses, suitable for natural interaction scenarios such as human-machine dialogue and voice-controlled systems. The goal is to learn phase-related motion features to extract motion characteristics more effectively, instead of treating features as image-like representations as done in the current model.
+	
+	\item \textbf{Improving objective evaluation with automatic metrics:} To reduce reliance on subjective evaluations, it is necessary to develop and incorporate reliable automatic evaluation methods, enabling the model to self-assess and adjust based on objective indicators.
+\end{itemize}
+
+\section{Thesis Contributions}
 \label{sec:contribution}
 
-Trong luận văn này, luận văn đã phát triển hệ thống sinh cử chỉ OHGesture, với các đóng góp quan trọng như sau:
+In this thesis, the OHGesture gesture generation system was developed, with the following key contributions:
 
 \begin{itemize}
-	\item Phát triển mô hình sinh cử chỉ dựa trên Diffusion: Hệ thống OHGesture được thiết kế để tạo ra các cử chỉ đồng bộ với giọng nói đầu vào và phản ánh đúng cảm xúc. Mô hình này còn có khả năng tổng quát hóa, cho phép sinh cử chỉ ngay cả với các mẫu giọng nói ngoài dữ liệu huấn luyện, mang lại độ chân thực cao.
+	\item \textbf{Development of a gesture generation model based on Diffusion:} The OHGesture system is designed to generate gestures synchronized with input speech and accurately reflecting emotion. The model also possesses generalization capabilities, allowing gesture generation even for speech samples outside the training data, thereby achieving high realism.
 	
-	\item Công khai mã nguồn và mô hình trên các nền tảng mở: Để thúc đẩy ứng dụng và cải tiến từ cộng đồng, luận văn đã cung cấp mã nguồn trên GitHub, luận văn mở rộng mã nguồn, và được công khai ở \hyperlink{https://github.com/hmthanh/OHGesture}{Github/OHGesture} \footnote{Mã nguồn Github \url{https://github.com/hmthanh/OHGesture}} và một phiên bản pretrained trên Huggingface \hyperlink{https://huggingface.co/openhuman/openhuman}{huggingface.co/openhuman/openhuman} \footnote{HuggingFace \url{https://huggingface.co/openhuman/openhuman}}, giúp các nhà nghiên cứu khác dễ dàng tiếp cận, tái hiện và mở rộng hệ thống.
+	\item \textbf{Open-sourcing code and models on public platforms:} To encourage community adoption and improvement, the thesis provides source code on GitHub, with extensions and releases available at \hyperlink{https://github.com/hmthanh/OHGesture}{Github/OHGesture} \footnote{GitHub source code: \url{https://github.com/hmthanh/OHGesture}} and a pretrained version on Huggingface at \hyperlink{https://huggingface.co/openhuman/openhuman}{huggingface.co/openhuman/openhuman} \footnote{HuggingFace: \url{https://huggingface.co/openhuman/openhuman}}, enabling other researchers to easily access, reproduce, and extend the system.
 	
-	\item Tích hợp thêm văn bản và giọng nói chuyển ngữ trong quá trình sinh cử chỉ: Với tập dữ liệu ZeroEGGS chỉ bao gồm giọng nói, cử chỉ và nhãn cảm xúc, luận văn sử dụng các API của Azure và Google để phiên âm (transcribe) các tệp giọng nói thành văn bản. Giúp mở rộng dữ liệu đầu vào của mô hình sinh cử chỉ thêm đặc trưng văn bản, giúp hệ thống có thêm ngữ cảnh để sinh ra các cử chỉ phù hợp hơn với nội dung cụ thể.
+	\item \textbf{Integration of text and transcribed speech in gesture generation:} Since the ZeroEGGS dataset includes only speech, gesture, and emotion labels, this thesis uses Azure and Google APIs to transcribe the speech files into text. This enriches the model’s input with textual features, giving the system additional context to produce more semantically appropriate gestures.
 	
-	\item Đóng góp vào việc xây dựng hệ thống đánh giá chuẩn hóa: Chúng tôi phát triển một hệ thống xếp hạng trực tuyến \hyperlink{https://genea-workshop.github.io/leaderboard/}{GENEA Leaderboard} \footnote{GENEA Leaderboard: \url{https://genea-workshop.github.io/leaderboard/}} \cite{nagy2024towards} cho các mô hình sinh cử chỉ. GENEA Leaderboard sẽ thu thập và xử lý các dữ liệu cử chỉ từ nhiều nguồn ngôn ngữ và tập dữ liệu khác nhau, tạo thành một tập dữ liệu chuẩn hóa duy nhất. Xây dựng một bản xếp hạng để so sánh nhiều mô hình khác nhau. Và sử dụng người để đánh giá các mô hình sinh, giúp đánh giá chính xác kết quả sinh của cử chỉ so với các độ đo trước đây, vốn không thể đo được sự phức tạp và đa dạng trong chuyển động của cử chỉ tương ứng với giọng nói. Điều này giúp tạo nên một nền tảng dữ liệu thống nhất, hỗ trợ việc đánh giá đồng nhất giữa các mô hình. Từ đó thúc đẩy tính thống nhất trong lĩnh vực sinh cử chỉ trong cộng đồng nghiên cứu.
+	\item \textbf{Contribution to standardized evaluation systems:} We developed an online ranking system \hyperlink{https://genea-workshop.github.io/leaderboard/}{GENEA Leaderboard} \footnote{GENEA Leaderboard: \url{https://genea-workshop.github.io/leaderboard/}} \cite{nagy2024towards} for gesture generation models. The GENEA Leaderboard collects and processes gesture data from multiple languages and datasets into a unified benchmark, allowing comparative evaluation across various models. Human evaluators are used to assess the models, providing more accurate evaluations of gesture generation results compared to previous metrics, which fail to capture the complexity and diversity of speech-related motion. This creates a unified data foundation that promotes consistent evaluation within the gesture generation research community.
 	
-	\item Xây dựng công cụ trực quan hóa bằng Unity: Các hệ thống trực quan hóa cử chỉ hiện nay đều dựa trên Blender, và không đạt kết quả hiển thị tốt khi sinh cử chỉ, bằng việc kế thừa mã nguồn từ mô hình DeepPhase \cite{starke2022deepphase} để xây dựng hệ thống kết xuất bằng Unity \hyperlink{https://github.com/DeepGesture/deepgesture-unity}{Github/DeepGesture-Unity}
-	\footnote{Hệ thống render quá trình sinh cử chỉ bằng Unity \url{https://github.com/DeepGesture/deepgesture-unity}}.
+	\item \textbf{Development of a Unity-based visualization tool:} Existing gesture visualization systems rely on Blender and do not render gestures effectively. By extending the source code of the DeepPhase model \cite{starke2022deepphase}, we developed a Unity-based rendering system \hyperlink{https://github.com/DeepGesture/deepgesture-unity}{Github/DeepGesture-Unity} \footnote{Unity-based gesture generation rendering system: \url{https://github.com/DeepGesture/deepgesture-unity}}.
 	
-	\item Xây dựng hệ thống đánh giá cử chỉ bằng FGD (Fréchet Gesture Distance): Dựa trên mã nguồn FGD \cite{yoon2020speech}, luận văn xây dựng GestureScore và huấn luyện một mô hình mới để đánh giá sự khác nhau về phân bố dữ liệu về góc quay giữa dữ liệu dự đoán và dữ liệu thật. Mã nguồn của  \hyperlink{https://github.com/GestureScore/GestureScore}{GestureScore} \footnote{Github/GestureScore: \url{https://github.com/GestureScore/GestureScore}} và mô hình pretrain của mô hình đánh giá được công khai ở  \hyperlink{https://huggingface.co/GestureScore}{Huggingface} \footnote{Huggingface/GestureScore: \url{https://huggingface.co/GestureScore/GestureScore}}
-	\item Xây dựng hướng phát triển trong tương lai: Dựa trên nền tảng của mô hình diffusion và hiểu rõ bản chất của quá trình sinh cử chỉ, luận văn có thể kết hợp các mô hình sinh cử chỉ dựa trên pha với các thuật toán xử lý và trích xuất thông tin, nhằm tối ưu hóa chất lượng và tính phù hợp của các cử chỉ được sinh ra. Hướng phát triển này mở ra triển vọng cho các cải tiến sâu rộng trong việc tương tác giữa cử chỉ và các yếu tố ngữ cảnh phức tạp như biểu cảm khuôn mặt, ngữ điệu và động lực cảm xúc, tạo nền tảng cho những bước tiến trong các ứng dụng giao tiếp người - máy và các lĩnh vực liên quan khác.
+	\item \textbf{Development of gesture evaluation using FGD (Fréchet Gesture Distance):} Based on the FGD source code \cite{yoon2020speech}, this thesis builds GestureScore and trains a new model to evaluate distribution differences in joint rotation angles between predicted and ground-truth data. The code is available at \hyperlink{https://github.com/GestureScore/GestureScore}{GestureScore} \footnote{Github/GestureScore: \url{https://github.com/GestureScore/GestureScore}} and the pretrained evaluation model is available on \hyperlink{https://huggingface.co/GestureScore}{Huggingface} \footnote{Huggingface/GestureScore: \url{https://huggingface.co/GestureScore/GestureScore}}.
+	
+	\item \textbf{Outlining future development directions:} Based on the diffusion model and a deep understanding of the gesture generation process, the thesis proposes integrating phase-based gesture generation models with advanced processing and feature extraction algorithms to optimize the quality and contextual alignment of generated gestures. This development direction opens up opportunities for significant improvements in gesture interaction with complex contextual elements such as facial expressions, prosody, and emotional dynamics, laying the groundwork for advancements in human-machine communication and related fields.
 \end{itemize}
-
-
 
 \newpage
 
-\section{Lời kết}
+\section{Closing Remarks}
 
-Qua quá trình thử nghiệm và phân tích kết quả sinh cử chỉ thực tế, mô hình OHGesture của luận văn đã kế thừa và phát triển từ mô hình DiffuseStyleGesture, có khả năng sinh cử chỉ chân thực, không chỉ trên các mẫu dữ liệu trong tập huấn luyện mà còn mở rộng được với những giọng nói không có trong dữ liệu huấn luyện, ví dụ như giọng nói của Steve Jobs. Điều này minh chứng cho tiềm năng của mô hình Diffusion trong việc sinh cử chỉ cho các dữ liệu hiếm, nơi xác suất dữ liệu thấp.
+Through experiments and analysis of gesture generation results, the OHGesture model developed in this thesis—an extension of the DiffuseStyleGesture model—demonstrates its ability to generate realistic gestures not only for data within the training set but also for out-of-distribution voices, such as that of Steve Jobs. This proves the potential of diffusion models for generating gestures in low-probability data contexts.
 
-Bên cạnh đó, luận văn đã đóng góp các mã nguồn chỉnh sửa trên Github, bao gồm quá trình kết xuất (render) và xử lý dữ liệu trên nền tảng Unity, tạo nền tảng thuận lợi cho các nghiên cứu và cải tiến tiếp theo đối với mô hình OHGesture. Việc kết hợp thêm văn bản vào quá trình sinh cử chỉ cũng là một bước đột phá, mở ra nhiều hướng phát triển ứng dụng trong các lĩnh vực yêu cầu tương tác tự nhiên và hiệu quả hơn.
+Furthermore, the thesis contributes modified source code on GitHub, including rendering and data processing pipelines based on Unity, providing a solid foundation for future research and improvements to the OHGesture model. The integration of textual input into the gesture generation process also represents a breakthrough, paving the way for applications in domains requiring more natural and effective human-computer interaction.

@@ -1,36 +1,34 @@
-\chapter{THỰC NGHIỆM}
+\chapter{EXPERIMENTS}
 \label{Chapter4}
 
-\section{Tập dữ liệu}
+\section{Dataset}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{EmotionAnimation}
-	\caption{Minh họa về 6 cử chỉ $\texttt{Happy}$, $\texttt{Sad}$, $\texttt{Neutral}$, $\texttt{Old}$, $\texttt{Relaxed}$ và $\texttt{Angry}$}
+	\caption{Illustration of 6 gestures: $\texttt{Happy}$, $\texttt{Sad}$, $\texttt{Neutral}$, $\texttt{Old}$, $\texttt{Relaxed}$, and $\texttt{Angry}$}
 \end{figure}
 
-Luận văn sử dụng tập dữ liệu ZeroEGGS \cite{ghorbani2022zeroeggszeroshotexamplebasedgesture} là một bộ dữ liệu motion capture được xây dựng để nghiên cứu và phát triển các mô hình tạo cử chỉ. Nó bao gồm 67 đoạn độc thoại do diễn viên motion capture nữ thực hiện, với tổng thời gian là 135 phút. Các đoạn hội thoại trong tập dữ liệu được biểu diễn với 6 cảm xúc khác nhau: $\texttt{Happy}$, $\texttt{Sad}$, $\texttt{Neutral}$, $\texttt{Old}$, $\texttt{Relaxed}$ và $\texttt{Angry}$, giúp mô phỏng nhiều trạng thái cảm xúc khác nhau trong cử chỉ và chuyển động cơ thể. ZeroEGGS cung cấp một nền tảng phong phú để nghiên cứu khả năng kết hợp giữa bài nói và cử chỉ động, phục vụ cho việc tạo ra các mô hình có thể điều chỉnh cử chỉ tương ứng với cảm xúc và ngữ nghĩa của văn bản.
+This thesis uses the ZeroEGGS dataset \cite{ghorbani2022zeroeggszeroshotexamplebasedgesture}, a motion capture dataset designed for research and development of gesture generation models. It includes 67 monologue clips performed by a female motion capture actor, with a total duration of 135 minutes. The monologues are annotated with 6 different emotions: $\texttt{Happy}$, $\texttt{Sad}$, $\texttt{Neutral}$, $\texttt{Old}$, $\texttt{Relaxed}$, and $\texttt{Angry}$, enabling simulation of various emotional states in gestures and body movements. ZeroEGGS provides a rich platform for studying the integration of speech and dynamic gestures, supporting the development of models capable of adapting gestures according to emotions and text semantics.
 
-\section{Công đoạn tiền xử lý dữ liệu}
+\section{Data Preprocessing}
 \label{sec:Preprocessing}
 
-Trong công đoạn {1. Tiền xử lý dữ liệu} (\autoref{fig:CommonStage}), các dữ liệu về cử chỉ, giọng nói, văn bản được đọc và xử lý để biểu diễn thành các vector hoặc ma trận thể hiện thông tin về dữ liệu thô.
+In stage {1. Data Preprocessing} (\autoref{fig:CommonStage}), gesture, speech, and text data are read and processed to be represented as vectors or matrices containing information derived from raw data.
 
-Đối với \textbf{dữ liệu văn bản}: Luận văn sử dụng thư viện $\texttt{nltk}$ tách các từ, sử dụng $\texttt{contractions}$ để chuyển các từ viết tắt về dạng chuẩn hóa.
+For \textbf{text data}: the thesis uses the $\texttt{nltk}$ library for tokenization and $\texttt{contractions}$ to normalize contracted words.
 
-Một trong những đóng góp của luận văn là từ dữ liệu giọng nói có sẵn từ tập ZeroEGGS, luận văn đã sử dụng Adobe Speech To Text để chuyển giọng nói thành văn bản, dùng Montreal Forced Aligner \cite{saxon2020robust} của từ điển âm vị Tiếng Anh để căn chỉnh được thời gian tương ứng với số khung hình của cử chỉ để thu được các TextGrid. Trong TextGrid sẽ có thời gian tương ứng với từng từ, dựa trên thông tin này, luận văn sử dụng  $\texttt{gensim}$ để nhúng vector word2vec.
- 
+One contribution of the thesis is to convert the speech data available in ZeroEGGS using Adobe Speech To Text, then align the phonetic timestamps using the Montreal Forced Aligner \cite{saxon2020robust} with an English phoneme dictionary to match the gesture frame rate, generating TextGrid files. From these TextGrids containing word-level timing information, the thesis uses $\texttt{gensim}$ to generate word2vec embeddings.
 
-\textbf{Dữ liệu cử chỉ} bao gồm các tệp BVH (BioVision Motion Capture) được thu nhận từ các cảm biến bằng các hệ thống Motion Capture. Trong các tệp BVH, có chứa hai thành phần gồm Hierachy và Motion. Trong đó:
+\textbf{Gesture data} consists of BVH (BioVision Motion Capture) files captured via motion capture systems. BVH files include two components: Hierarchy and Motion. Specifically:
 
 \begin{itemize}
-	\item \texttt{HIERARCHY}: là một cây định nghĩa thông tin khung xương bao gồm 75 xương $\{ \mathbf{b}_1, \mathbf{b}_2 \cdots \mathbf{b}_{75} \} $, mỗi bone bao gồm thông tin về vị trí ban đầu (\texttt{OFFSET}), và các loại tham số \texttt{CHANNELS} thể hiện thông tin về loại, thứ tự của góc quay (\texttt{Zrotation}, \texttt{Yrotation} \texttt{Xrotation}) và vị trí (\texttt{Xposition}, \texttt{Yposition}, \texttt{Zposition}) sẽ định nghĩa trong phần \texttt{MOTION}. Bone (thường là \texttt{Hips}) đầu tiên sẽ là bone gốc $\mathbf{b}_{\text{root}}$, là vị trí sau đó sẽ được forward kinematic (động học thuận) để được T-Shape là ví trí ban đầu của toàn bộ khung xương trước khi áp dụng chuyển động.
+	\item \texttt{HIERARCHY}: defines a skeletal tree containing 75 bones $\{ \mathbf{b}_1, \mathbf{b}_2 \cdots \mathbf{b}_{75} \}$, each with an initial position (\texttt{OFFSET}) and \texttt{CHANNELS} parameters specifying the type and order of rotation angles (\texttt{Zrotation}, \texttt{Yrotation}, \texttt{Xrotation}) and position (\texttt{Xposition}, \texttt{Yposition}, \texttt{Zposition}), which are defined in the \texttt{MOTION} section. The first bone (usually \texttt{Hips}) is the root bone $\mathbf{b}_{\text{root}}$, used to define the T-pose via forward kinematics as the initial pose of the skeleton before applying motion.
 	
-	\item \texttt{MOTION}: là chuỗi các khung hình. Mỗi khung hình là dữ liệu chuyển động thể hiện sự thay đổi của toàn bộ $75$ khung xương đã định nghĩa trong \texttt{CHANNELS} của \texttt{HIERARCHY}.
+	\item \texttt{MOTION}: a sequence of frames, each containing motion data representing changes of all $75$ bones as defined by the \texttt{CHANNELS} in the \texttt{HIERARCHY}.
 \end{itemize}
 
-
-Mô hình của luận văn chuyển dữ liệu từ góc quay Euler sang góc quay Quaternion, với góc quay Quaternion là một véc-tơ gồm 4 phần tử.
+The model in the thesis converts Euler rotation angles to quaternion rotation angles, where a quaternion is a 4-dimensional vector.
 
 \begin{equation} \label{eq:gesturevector}
 	\mathbf{g} = \Big[ \mathbf{p}_{\text{root}},  \mathbf{r}_{\text{root}},
@@ -41,56 +39,52 @@ Mô hình của luận văn chuyển dữ liệu từ góc quay Euler sang góc 
 	\Big]
 \end{equation}
 
-Trong  đó với mỗi $\mathbf{g} \in \mathbb{R}^{1141}$ bao gồm:
+Here, each $\mathbf{g} \in \mathbb{R}^{1141}$ includes:
 {
 	\begin{itemize}
-		\item $\mathbf{p}_{\text{root}} \in \mathbb{R}^3$: tọa độ của điểm gốc
-		\item $\mathbf{r}_{\text{root}} \in \mathbb{R}^4$: Góc quay của điểm gốc
-		\item $\mathbf{p}'_{\text{root}} \in \mathbb{R}^3$: Vận tốc thay đổi của tọa độ gốc
-		\item $\mathbf{r}'_{\text{root}} \in \mathbb{R}^3$: Vận tốc thay đổi của góc quay gốc
+		\item $\mathbf{p}_{\text{root}} \in \mathbb{R}^3$: coordinates of the root joint
+		\item $\mathbf{r}_{\text{root}} \in \mathbb{R}^4$: rotation (quaternion) of the root joint
+		\item $\mathbf{p}'_{\text{root}} \in \mathbb{R}^3$: velocity of the root position
+		\item $\mathbf{r}'_{\text{root}} \in \mathbb{R}^3$: angular velocity of the root rotation
 		
-		\item $\mathbf{p}_{\text{joins}} \in \mathbb{R}^{3 n_{\text{join} }}$: tọa độ của các khung xương
-		\item $\mathbf{r}_{\text{joins}} \in \mathbb{R}^{6 n_{\text{join} }}$: Góc quay của các khung xương theo mặt phẳng X và Y
-		\item $\mathbf{p}'_{\text{joins}} \in \mathbb{R}^{3n_{\text{join} }}$: Vận tốc thay đổi của tọa độ các khung xương
-		\item $\mathbf{r}'_{\text{joins}} \in \mathbb{R}^{3n_{\text{join} }}$: Vận tốc thay đổi của góc quay các khung xương
-		\item $\mathbf{d}_{\text{gaze}} \in \mathbb{R}^3$: Là hướng nhìn
+		\item $\mathbf{p}_{\text{joins}} \in \mathbb{R}^{3 n_{\text{join} }}$: positions of other joints
+		\item $\mathbf{r}_{\text{joins}} \in \mathbb{R}^{6 n_{\text{join} }}$: joint rotations on the X and Y planes
+		\item $\mathbf{p}'_{\text{joins}} \in \mathbb{R}^{3n_{\text{join} }}$: velocity of joint positions
+		\item $\mathbf{r}'_{\text{joins}} \in \mathbb{R}^{3n_{\text{join} }}$: angular velocity of joint rotations
+		\item $\mathbf{d}_{\text{gaze}} \in \mathbb{R}^3$: gaze direction
 \end{itemize}}
 
-Chuỗi cử chỉ ban đầu có dữ liệu là góc quay sẽ được chuyển thành các góc quay radian, từ góc quay radian ở dạng Euler sẽ được chuyển sang góc quay Quaternion, với quá trình cụ thể được trình bày trong \autoref{appendix:BVHData:QuaternionConvert}.
+The original gesture sequences in Euler angles are converted to radians, then converted from Euler to Quaternion as detailed in \autoref{appendix:BVHData:QuaternionConvert}.
 
-\textbf{Dữ liệu giọng nói}: $\mathbf{a}_{\text{raw}} \in \mathbb{R}^{ \text{length } }$ là chuỗi giọng nói thô được đọc ở sample rate 16000, sau đó được cắt thành $\mathbf{a} \in \mathbb{R}^{64000}$ tương ứng với 4 giây. Luận văn sử dụng thư viện \texttt{ffmpeg-normalize} để chuẩn hóa tiếng nói nhỏ hơn so với giọng nói gốc.
+\textbf{Speech data}: $\mathbf{a}_{\text{raw}} \in \mathbb{R}^{ \text{length } }$ is raw speech sampled at 16000 Hz, trimmed into segments $\mathbf{a} \in \mathbb{R}^{64000}$ corresponding to 4 seconds. The thesis uses \texttt{ffmpeg-normalize} to normalize volume to a level lower than the original.
 
-\textbf{Cảm xúc}: Dữ liệu cảm xúc sẽ được biểu diễn bằng một vector one-hot encoding sẵn. Trong quá trình lấy mẫu, tên tệp sẽ định nghĩa luôn thông tin về cảm xúc mong muốn.
+\textbf{Emotion}: Emotion data is represented using a predefined one-hot encoded vector. During sampling, the filename encodes the target emotion.
 
-Toàn bộ dữ liệu sẽ được lưu bằng $\texttt{h5}$ được dùng để lưu trữ dữ liệu.
+All data is stored using the $\texttt{h5}$ format.
 
-\section{Quá trình huấn luyện}
+\section{Training Process}
 
-Toàn bộ quá trình huấn luyện mô hình được thực hiện trong gần 2 tuần với các tham số sau: số bước huấn luyện $T = 1000$, sử dụng GPU Nvidia 3090. Learning rate được thiết lập là $3 \times 10^{-5}$, với kích thước lô huấn luyện (batch size) là $640$ và quá trình huấn luyện thực hiện tổng cộng $43,853$ mẫu, tức ta sẽ lấy ngẫu nhiên $t$ bước vào hàm $f_{\theta}$ để thực hiện dự đoán $\mathbf{x}_{0}$. Tham số điều khiển cảm xúc là $\gamma = 0.1$. Tỷ lệ sử dụng mặt nạ ngẫu nhiên (random mask) cho cảm xúc và cử chỉ khởi tạo là $10\%$, quá trình sử dụng mặt nạ ngẫu nhiên với hàm Bernoulli nhằm ẩn hiện ma trận thông tin của cảm xúc và cử chỉ khởi tạo.
+The entire model training process was conducted over approximately two weeks with the following parameters: number of training steps $T = 1000$, using an Nvidia 3090 GPU. The learning rate was set to $3 \times 10^{-5}$, batch size was $640$, and a total of $43,853$ samples were trained. At each step, $t$ is randomly sampled and input to $f_{\theta}$ to predict $\mathbf{x}_{0}$. The emotional control parameter was set to $\gamma = 0.1$. The probability of applying random masking to the emotion and initial gesture matrices was $10\%$, using a Bernoulli distribution to randomly hide/reveal these matrices.
 
-Giá trị của $\beta$ bắt đầu từ $0.5 \rightarrow 0.999$.
+The $\beta$ parameter was scheduled linearly from $0.5 \rightarrow 0.999$.
 
-Hàm $\operatorname{HuberLoss} (\mathbf{x}_{0},  \hat{\mathbf{x}}_{0} )$ được tính như sau:
+The $\operatorname{HuberLoss} (\mathbf{x}_{0},  \hat{\mathbf{x}}_{0} )$ is computed as follows:
 
 \begin{itemize}
-\item Nếu $|\mathbf{x}_0 - \hat{\mathbf{x}}_0| \leq \delta$ thì $\mathcal{L}_{ \delta, \mathbf{x}_0, \hat{\mathbf{x}}_0} = \frac{1}{2} (\mathbf{x}_0 - \mathbf{x}_0)^2$: Nhỏ hơn ngưỡng thì bình phương khoảng cách. Lúc này HuberLoss hoạt động giống như MSE. MSE nhạy cảm hơn với các lỗi nhỏ giúp đạo hàm (gradient) mượt mà hơn.
+\item If $|\mathbf{x}_0 - \hat{\mathbf{x}}_0| \leq \delta$ then $\mathcal{L}_{ \delta, \mathbf{x}_0, \hat{\mathbf{x}}_0} = \frac{1}{2} (\mathbf{x}_0 - \mathbf{x}_0)^2$: Below the threshold, the loss is computed as squared distance (similar to MSE), which is sensitive to small errors and provides smooth gradients.
 
-\item Nếu $|\mathbf{x}_0 - \hat{\mathbf{x}}_0| > \delta$ thì $\mathcal{L}_{ \delta, \mathbf{x}_0, \hat{\mathbf{x}}_0}  =  \delta \cdot |\mathbf{x}_0 - \mathbf{x}_0| - \frac{1}{2} \delta^2$: Lớn hơn ngưỡng thì được tính bằng khoảng cách tuyệt đối MAE. MAE nhằm giảm độ nhạy với lỗi lớn, không phạt nặng lỗi lớn để giúp mô hình ổn định hơn đối với trường hợp ngoại lai.
+\item If $|\mathbf{x}_0 - \hat{\mathbf{x}}_0| > \delta$ then $\mathcal{L}_{ \delta, \mathbf{x}_0, \hat{\mathbf{x}}_0}  =  \delta \cdot |\mathbf{x}_0 - \mathbf{x}_0| - \frac{1}{2} \delta^2$: Above the threshold, the loss behaves like MAE, reducing sensitivity to large errors and improving robustness against outliers.
 
 \end{itemize}
 
-%Trong thực nghiệm, 	
+The training process is implemented in the open-source repository: \hyperlink{https://github.com/hmthanh/OHGesture}{Github/OHGesture} \footnote{\url{https://github.com/hmthanh/OHGesture}}.
 
-
-Quá trình huấn luyện được triển khai trên mã nguồn công khai tại: \hyperlink{https://github.com/hmthanh/OHGesture}{Github/OHGesture} \footnote{\url{https://github.com/hmthanh/OHGesture}}.
-
-
-\section{Quá trình sử dụng Unity để kết xuất}
+\section{Rendering Process in Unity}
 \label{sec:Render}
 
-Để trực quan hóa quá trình sinh cử chỉ từ dữ liệu đầu ra của mô hình, trong công đoạn \textit{7. Kết xuất} (\autoref{fig:CommonStage}) luận văn sử dụng Unity, kế thừa mã nguồn từ mô hình DeepPhase \cite{starke2022deepphase}  . Dữ liệu sau khi sinh là tệp BVH (BioVision Motion Capture). Trong Unity, luận văn bổ sung mã nguồn C-Sharp để kết xuất theo vị trí tọa độ và nhãn tương ứng, với vị trí và góc quay của các xương được biểu diễn dưới dạng quaternion.
+To visualize the gesture generation process from model output, the thesis uses Unity in stage \textit{7. Rendering} (\autoref{fig:CommonStage}), extending code from the DeepPhase model \cite{starke2022deepphase}. The generated output is in BVH (BioVision Motion Capture) format. In Unity, the author adds C-Sharp scripts to render gestures based on coordinates and labels, with bone positions and rotations represented using quaternions.
 
-Chi tiết phần render cử chỉ được sinh ra, tôi trình bày ở \autoref{Appendix3}.
+Rendering details are presented in \autoref{Appendix3}.
 
-Mã nguồn chương trình Unity được luận văn công khai ở \hyperlink{https://github.com/DeepGesture/deepgesture-unity}{Github/DeepGesture-Unity}
+The Unity project source code is available at: \hyperlink{https://github.com/DeepGesture/deepgesture-unity}{Github/DeepGesture-Unity}
 \footnote{\url{https://github.com/DeepGesture/deepgesture-unity}}.

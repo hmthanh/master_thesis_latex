@@ -1,10 +1,10 @@
-\chapter{Quá trình xử lý dữ liệu BVH}
+\chapter{BVH Data Processing Pipeline}
 \label{appendix:BVHData}
 
-\section{Cấu trúc khung xương của một nhân vật}
+\section{Skeleton Structure of a Character}
 \label{appendix:BVHData:skeleton}
 
-Một số tên khung xương nhân vật trong $75$ khung xương chuyển động bao gồm:
+Some skeleton joint names from the $75$ motion skeletons include:
 
 {
 \small
@@ -31,34 +31,28 @@ Một số tên khung xương nhân vật trong $75$ khung xương chuyển đ�
 ...
 }
 
-%\begin{itemize}
-%	\item Left
-%\end{itemize}
-
-%\begincolcol}
-
 \begin{figure}[H]
 \centering
 \includegraphics[height=10.5cm]{Bone}
-\caption{Khung xương của một nhân vật}
+\caption{Character skeleton}
 \label{fig:Bone}
 \end{figure}
 
-\section{Cấu trúc tệp dữ liệu BVH}
+\section{Structure of a BVH File}
 \label{appendix:BVHData:BVHStructure}
 
-File BVH (Biovision Hierarchy) là một định dạng file dữ liệu chứa thông tin về cấu trúc xương và dữ liệu về chuyển động của xương trong một hệ thống xương. File BVH bao gồm hai phần chính: phần khai báo cấu trúc xương và phần dữ liệu chuyển động của xương. 
+A BVH (Biovision Hierarchy) file is a data format that contains information about the skeleton structure and motion data of bones in a skeletal system. A BVH file consists of two main parts: the skeleton hierarchy declaration and the bone motion data.
 
 \begin{itemize}
 	\item \textbf{HIERARCHY}:
 	
 	\begin{itemize}
-		\item Định nghĩa thành phần và tên các khung xương, vị trí khởi tạo của các khung xương ở vị trí T-pose (Tay diễn viên motion capture sẽ được duỗi thẳng thành hình chữ T).
-		\item Định nghĩa quan hệ cha-con từ nút gốc đến các nút lá của một khung xương. Với nút gốc thường là cột sống ($\texttt{Spine}$).
-		\item Định nghĩa các dữ liệu sẽ được ghi nhận như vị trí hoặc góc quay theo chiều $X, Y, Z$ của mỗi khung xương theo thời gian.
+		\item Defines the components and names of the skeleton joints, as well as the initial positions of the joints in the T-pose (motion capture actors extend their arms horizontally to form a "T").
+		\item Defines the parent-child relationships from the root node to the leaf nodes of the skeleton, typically with the root node being the spine ($\texttt{Spine}$).
+		\item Specifies the data to be recorded such as position or rotation angles along $X, Y, Z$ axes of each joint over time.
 	\end{itemize}
 	
-	\item \textbf{MOTION}: Là chuỗi chuyển động theo từng khung hình, với mỗi khung hình là dữ liệu của từng xương về chuyển động theo thông tin về góc quay hoặc vị trí đã định nghĩa ở HIERARCHY.
+	\item \textbf{MOTION}: A sequence of movements frame by frame, where each frame contains bone movement data as defined in the HIERARCHY section (e.g., rotation angles or positions).
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -66,35 +60,27 @@ File BVH (Biovision Hierarchy) là một định dạng file dữ liệu chứa 
 	\begin{subfigure}{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]{BVH1}
-		\caption{HIERARCHY trong tệp BVH}
+		\caption{HIERARCHY in BVH file}
 		\label{fig:BVH1}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]{BVH2}
-		\caption{MOTION trong tệp BVH}
+		\caption{MOTION in BVH file}
 		\label{fig:BVH2}
 	\end{subfigure}
 \end{figure}
 
-
-
-
-%	\begin{figure}
-	%		\centering
-	%		\includegraphics[width=0.25\textwidth]{BVHFile}
-	%	\end{figure}
-	
-$\mathbf{rotation}_i^{\operatorname{local}} = \{ \alpha ,\beta , \gamma \}$ lần lượt là góc quay quanh các trục $Z$ ,$Y$ , và $X$, góc quay tổng hợp ba trục trong không gian Euler là 
+$\mathbf{rotation}_i^{\operatorname{local}} = \{ \alpha ,\beta , \gamma \}$ represents the rotation angles around the $Z$, $Y$, and $X$ axes, respectively. The combined rotation in Euler space is:
 
 \begin{equation}
 R = R_Z(\alpha) R_Y(\beta) R_X(\gamma)
 \end{equation}
 
-Trong đó:
+Where:
 
-1. \textbf{Ma trận quay quanh trục \(Z\)}:
+1. \textbf{Rotation matrix around axis \(Z\)}:
 
 \[
 R_Z(\alpha) = 
@@ -105,7 +91,7 @@ R_Z(\alpha) =
 \end{bmatrix}
 \]
 
-2. \textbf{Ma trận quay quanh trục \(Y\)}:
+2. \textbf{Rotation matrix around axis \(Y\)}:
 
 \[
 R_Y(\beta) = 
@@ -116,7 +102,7 @@ R_Y(\beta) =
 \end{bmatrix}
 \]
 
-3. \textbf{Ma trận quay quanh trục \(X\)}:
+3. \textbf{Rotation matrix around axis \(X\)}:
 
 \[
 R_X(\gamma) = 
@@ -127,22 +113,19 @@ R_X(\gamma) =
 \end{bmatrix}
 \]
 
-Để tính tọa độ chuyển động của một nhân vật, thực hiện phép toán sau:
+To compute the motion coordinates of a character, the following operation is applied:
 
 \begin{equation}
 	\mathbf{position}_{\text{global}} = R \cdot \mathbf{position}_{\text{local}} + \mathbf{t}
 \end{equation}
 
 
-\section{Quá trình chuyển góc quay Euler sang Quaternion}
+\section{Conversion from Euler Angles to Quaternions}
 \label{appendix:BVHData:QuaternionConvert}
 
+To avoid Gimbal lock, Euler angle data must be converted into quaternion representation. Each bone's rotation from Euler angles in the ZYX order is represented as a quaternion $q = (q_w, q_x, q_y, q_z)$, with components calculated as follows:
 
-Để tránh Gimbal lock, dữ liệu ở dạng góc quay Euler phải được chuyển sang dạng góc quay Quaternion. Trong đó góc quay từng Bone dạng Euler ZYX sang dạng Quaternion, mỗi Bone biểu diễn bằng 4 phần tử $q = (q_w, q_x, q_y, q_z)$, với các giá trị được tính như sau:
-%	Mỗi Bone được biểu diễn thành: 
-
-Đầu tiên, tính các giá trị $\cos$ và $\sin$ của một nửa góc quay cho mỗi trục:
-
+First, compute the $\cos$ and $\sin$ values of half the rotation angles for each axis:
 
 \begin{itemize}
 	\item $c_{\alpha} = \cos\left(\frac{\alpha}{2}\right), \quad s_{\alpha} = \sin\left(\frac{\alpha}{2}\right)$
@@ -150,8 +133,7 @@ R_X(\gamma) =
 	\item $c_{\gamma} = \cos\left(\frac{\gamma}{2}\right), \quad s_{\gamma} = \sin\left(\frac{\gamma}{2}\right)$
 \end{itemize}
 
-Dựa trên các giá trị tính được ở trên, các thành phần của quaternion được tính như sau:
-
+Based on the values above, the quaternion components are computed as:
 
 \begin{itemize}
 	\item $q_w = c_{\alpha} c_{\beta} c_{\gamma} + s_{\alpha} s_{\beta} s_{\gamma}$
@@ -160,10 +142,10 @@ Dựa trên các giá trị tính được ở trên, các thành phần của q
 	\item $q_z = s_{\alpha} c_{\beta} c_{\gamma} - c_{\alpha} s_{\beta} s_{\gamma}$
 \end{itemize}
 
-Với quaternion $q$ đã tính, vị trí toàn cục của bone $\mathbf{p}_{\text{global}}$ được xác định bằng cách quay vị trí cục bộ $\mathbf{p}_{\text{local}}$ thông qua công thức:
+With the computed quaternion $q$, the global position of the bone $\mathbf{p}_{\text{global}}$ is determined by rotating the local position $\mathbf{p}_{\text{local}}$ using the formula:
 
 \begin{equation}
 	\mathbf{p}_{\text{global}} = q \cdot \mathbf{p}_{\text{local}} \cdot q^{-1} + \mathbf{t}
 \end{equation}
 
-với $\mathbf{t}$ là vị trí gốc của bone trong không gian toàn cục.
+where $\mathbf{t}$ is the origin position of the bone in global space.
