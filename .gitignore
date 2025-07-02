@@ -18,6 +18,7 @@
 *.fls
 *.run.xml
 *.synctex(busy)
+*.loa
 
 # Editor swap and backup files
 *~
