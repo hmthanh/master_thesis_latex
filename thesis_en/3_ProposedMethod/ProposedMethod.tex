@@ -9,12 +9,14 @@ The main contributions of the thesis are presented in \autoref{sec:contribution}
 
 The thesis first describes the diffusion model in \autoref{sec:summary_diffusion}, followed by the proposed OHGesture model in \autoref{sec:ohgesture}.
 
+\pagebreak
+
 \section{Basic Diffusion Model and Improvements}
 \label{sec:summary_diffusion}
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{DiffuseAndDenoise}
+	\includegraphics[width=\linewidth]{DiffuseAndDenoise.jpg}
 	\caption{The \textbf{non-training} Diffusion and Denoising Process}
 	\label{fig:DiffuseAndDenoise}
 \end{figure}
@@ -52,7 +54,7 @@ Since a function of the form $f(x) = ax + b\epsilon$, with $\epsilon \sim \mathc
 
 Here, $\sqrt{1 - \beta_t}$ gradually decreases the contribution of $\mathbf{x}_t$, while $\beta_t$ increases the noise component. Typically, $\beta_1 < \beta_2 < \dots < \beta_T$. As $T \to \infty$, $\mathbf{x}_T$ approaches a pure Gaussian distribution: $q(\mathbf{x}_T) = \mathcal{N}(0, \mathbf{I})$ \cite{weng2021diffusion}.
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\centering
 	\includegraphics[height=160pt]{AlgorithmForwardDiffusion}
 	\caption{Noise addition during training}
@@ -61,12 +63,27 @@ Here, $\sqrt{1 - \beta_t}$ gradually decreases the contribution of $\mathbf{x}_t
 
 Since $\boldsymbol{\epsilon}_{t-1}, \boldsymbol{\epsilon}_{t-2}, \dots \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$ and fixed for each $t$, $\bx_t$ can be computed directly from $\bx_0$. Define $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}_t = \prod_{i=1}^t \alpha_i$, then \autoref{eq:addgaussian} becomes:
 
+%\begin{equation}
+%\begin{aligned}
+%	\boldsymbol{x}_t &= \sqrt{\bar{\alpha}_t} \boldsymbol{x}_0 + \sqrt{1 - \bar{\alpha}_t} \boldsymbol{\epsilon}_0 \\
+%	&\sim \mathcal{N}\left(\boldsymbol{x}_t; \sqrt{\bar{\alpha}_t} \boldsymbol{x}_0, \left(1 - \bar{\alpha}_t\right) \textbf{I}\right)
+%\end{aligned}
+%\label{eq:tracexzero}
+%\end{equation}
+
 \begin{equation}
-\begin{aligned}
-	\boldsymbol{x}_t &= \sqrt{\bar{\alpha}_t} \boldsymbol{x}_0 + \sqrt{1 - \bar{\alpha}_t} \boldsymbol{\epsilon}_0 \\
-	&\sim \mathcal{N}\left(\boldsymbol{x}_t; \sqrt{\bar{\alpha}_t} \boldsymbol{x}_0, \left(1 - \bar{\alpha}_t\right) \textbf{I}\right)
-\end{aligned}
-\label{eq:tracexzero}
+	\begin{aligned}
+		\boldsymbol{x}_t &= \sqrt{\alpha_t}\boldsymbol{x}_{t-1} + \sqrt{1 - \alpha_t}\boldsymbol{\epsilon}_{t-1} \\
+		&= \sqrt{\alpha_t}\left(\sqrt{\alpha_{t-1}}\boldsymbol{x}_{t-2} + \sqrt{1 - \alpha_{t-1}}\boldsymbol{\epsilon}_{t-2}\right) + \sqrt{1 - \alpha_t}\boldsymbol{\epsilon}_{t-1} \\
+		&= \sqrt{\alpha_t\alpha_{t-1}}\boldsymbol{x}_{t-2} + \sqrt{\alpha_t(1 - \alpha_{t-1})}\boldsymbol{\epsilon}_{t-2} + \sqrt{1 - \alpha_t}\boldsymbol{\epsilon}_{t-1} \\
+		&= \sqrt{\alpha_t\alpha_{t-1}}\boldsymbol{x}_{t-2} + \sqrt{\alpha_t(1 - \alpha_{t-1}) + (1 - \alpha_t)}\boldsymbol{\epsilon}_{t-2} \\
+		&= \sqrt{\alpha_t\alpha_{t-1}}\boldsymbol{x}_{t-2} + \sqrt{1 - \alpha_t\alpha_{t-1}}\boldsymbol{\epsilon}_{t-2} \\
+		&= \ldots \\
+		&= \sqrt{\prod_{i=1}^t \alpha_i} \boldsymbol{x}_0 + \sqrt{1 - \prod_{i=1}^t \alpha_i} \boldsymbol{\epsilon}_0 \\
+		&= \sqrt{\bar{\alpha}_t} \boldsymbol{x}_0 + \sqrt{1 - \bar{\alpha}_t} \boldsymbol{\epsilon}_0 \\
+		&\sim \mathcal{N}\left(\boldsymbol{x}_t; \sqrt{\bar{\alpha}_t} \boldsymbol{x}_0, \left(1 - \bar{\alpha}_t\right) \textbf{I}\right)
+	\end{aligned}
+	\label{eq:tracexzero}
 \end{equation}
 
 The evolution of $\sqrt{\alpha}$ and $\sqrt{1 - \alpha}$ over diffusion steps is shown in Appendix \autoref{appendix:Appendix1}.
@@ -74,7 +91,7 @@ The evolution of $\sqrt{\alpha}$ and $\sqrt{1 - \alpha}$ over diffusion steps is
 \subsection{Denoising Process}
 \label{subsection:denoising_process}
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\centering
 	\includegraphics[height=280pt]{AlgorithmSamplingDiffusion}
 	\caption{Denoising during inference}
@@ -99,7 +116,7 @@ where $\boldsymbol{\mu}_\theta(\mathbf{x}_t, t) = {\frac{1}{\sqrt{\alpha_t}} \le
 
 \subsection{Training Process in the Basic Diffusion Model}
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=\linewidth]{DDPMTraining}
 	\caption{Basic diffusion model}
@@ -122,7 +139,7 @@ The total loss is $\mathcal{L} = \sum_{t=1}^T \mathcal{L}^t$.
 
 Here, $f_{\theta}(x_t, t)$ or $\epsilon_\theta$ is a U-Net model used to encode and decode the data for noise prediction. The computation process is illustrated in \autoref{fig:basic_diffusion}.
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 	\setlength{\baselineskip}{10pt}
 	\begin{enumerate}
 		\vspace{5pt}
@@ -180,7 +197,7 @@ Following the training process, the DDPM sampling algorithm begins from pure noi
 
 The sampling process (\autoref{alg:samplingddpm}) proceeds from step $T$ down to $1$, and at each step, a random noise $\mathbf{z} \sim \mathcal{N}(0, \mathbf{I})$ is generated and added to the predicted result. At each step $t$, the model predicts the noise $\boldsymbol{\epsilon}_{\theta'}$ based on the noisy data $\mathbf{x}_t$ and time step $t$, then uses this prediction to compute the value $\mu$, an estimate of $\mathbf{x}_0$. Finally, a noise term $\sigma_t \mathbf{z}$ is added to $\mu$ to obtain $\hat{\mathbf{x}}_{t-1}$, the noisy data at step $t-1$. This process continues until $t = 1$, at which point $\hat{\mathbf{x}}_0$ — the final prediction of the original data — is obtained through denoising.
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 	\caption{Sampling algorithm in DDPM}
 	\label{alg:samplingddpm}
 	\setlength{\baselineskip}{10pt}
@@ -220,7 +237,7 @@ Based on \autoref{eq:tracexzero}, it is clear that given $\bx_t$, we can infer $
 
 From this observation, the authors in \cite{nichol2021improved} proposed an improvement to DDPM: instead of using the neural network $f_{\theta}(\bx_t, t)$ to predict $\epsilon_t$ as in \autoref{fig:basic_diffusion}, the function $f_{\theta}(\bx_t, t)$ is repurposed to directly predict $\bx_0$, after which noise is added using \autoref{eq:tracexzero}.
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\captionsetup{skip=2pt}
 	\includegraphics[width=\linewidth]{X0Objective}
 	\caption{Comparison between $\epsilon$ objective (top) and $\bx_0$ objective (bottom)}
@@ -239,7 +256,7 @@ As shown in \autoref{fig:X0Objective}, we start with forward diffusion from $t: 
 
 To control the generation process under different conditions, generation must be conditioned on $c$—that is, we aim to model $p(\bx | c)$ given condition $c$. The authors in \cite{dhariwal2021diffusion} proposed using a separate function $f_{\phi}$ to train the conditional component. However, this approach presents difficulties when the conditions change, and combining or updating weights in a separate model is challenging for scalability.
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\captionsetup{skip=20pt}
 	\includegraphics[width=0.9\linewidth]{AdversarialGradient}
 	\caption{Conditional Diffusion via Guidance Vector}
